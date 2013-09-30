@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{F6163F95-DA23-49C6-B58B-CEF0CF0B2C83}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SharpSquare</RootNamespace>
+    <AssemblyName>SharpSquare</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Core\FourSquareMultipleResponse.cs" />
+    <Compile Include="Core\FourSquareResponse.cs" />
+    <Compile Include="Core\FourSquareSingleResponse.cs" />
+    <Compile Include="Core\SharpSquare.cs" />
+    <Compile Include="Entities\Badge.cs" />
+    <Compile Include="Entities\Category.cs" />
+    <Compile Include="Entities\Checkin.cs" />
+    <Compile Include="Entities\Comment.cs" />
+    <Compile Include="Entities\Contact.cs" />
+    <Compile Include="Entities\Dimension.cs" />
+    <Compile Include="Entities\FourSquareEntity.cs" />
+    <Compile Include="Entities\FourSquareEntityExploreVenuesGroups.cs" />
+    <Compile Include="Entities\FourSquareEntityGroups.cs" />
+    <Compile Include="Entities\FourSquareEntityItems.cs" />
+    <Compile Include="Entities\FourSquareEntityUsers.cs" />
+    <Compile Include="Entities\Hour.cs" />
+    <Compile Include="Entities\Image.cs" />
+    <Compile Include="Entities\Item.cs" />
+    <Compile Include="Entities\Link.cs" />
+    <Compile Include="Entities\List.cs" />
+    <Compile Include="Entities\Location.cs" />
+    <Compile Include="Entities\Mayorship.cs" />
+    <Compile Include="Entities\Menu.cs" />
+    <Compile Include="Entities\Open.cs" />
+    <Compile Include="Entities\Photo.cs" />
+    <Compile Include="Entities\Price.cs" />
+    <Compile Include="Entities\Reasons.cs" />
+    <Compile Include="Entities\Score.cs" />
+    <Compile Include="Entities\Segment.cs" />
+    <Compile Include="Entities\Setting.cs" />
+    <Compile Include="Entities\Source.cs" />
+    <Compile Include="Entities\Special.cs" />
+    <Compile Include="Entities\Stat.cs" />
+    <Compile Include="Entities\TimeFrame.cs" />
+    <Compile Include="Entities\Tip.cs" />
+    <Compile Include="Entities\Todo.cs" />
+    <Compile Include="Entities\User.cs" />
+    <Compile Include="Entities\Venue.cs" />
+    <Compile Include="Entities\VenueExplore.cs" />
+    <Compile Include="Entities\VenueGroup.cs" />
+    <Compile Include="Entities\VenueHistory.cs" />
+    <Compile Include="Entities\VenueTimeSerie.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
