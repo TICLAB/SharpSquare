@@ -11,3 +11,37 @@ SharpSquare implements almost all the features offered by the FourSquare API and
 
 Each API call is mapped to a one-to-one method and each FourSquare entity is mapped to a class.
 
+
+Code examples
+=============
+
+using FourSquare.SharpSquare.Core;
+using FourSquare.SharpSquare.Entities;
+
+string clientId = "CLIENT_ID";
+string clientSecret = "CLIEND_SECRET";
+string redirectUri = "REDIRECT_URI";
+SharpSquare sharpSquare = new SharpSquare(clientId, clientSecret);
+
+
+Authentication
+==============
+
+if (Request["code"] != null)
+{
+	sharpSquare.GetAccessToken(redirectUri, Request["code"]);
+	// Here, you can do something
+}
+else
+{
+	HyperLink.NavigateUrl = sharpSquare.GetAuthenticateUrl(redirectUri);
+}
+
+Create a check-in
+=================
+
+Dictionary<string, string> parameters = new Dictionary<string, string>();
+parameters.Add("venueId", "VENUE_ID");
+parameters.Add("broadcast", "public");
+Checkin checkin = sharpSquare.AddCheckin(parameters);
+
