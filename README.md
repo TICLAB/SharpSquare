@@ -45,3 +45,8 @@ parameters.Add("venueId", "VENUE_ID");
 parameters.Add("broadcast", "public");
 Checkin checkin = sharpSquare.AddCheckin(parameters);
 ```
+Authors
+=======
+<a href="https://twitter.com/MicheleBertoli" target=_blank title="Michele Bertoli">@MicheleBertoli</a>
+<br>
+<a href="https://twitter.com/ufranchini" target=_blank title="Umberto Franchini">@ufranchini</a>
