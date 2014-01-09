@@ -327,7 +327,8 @@ namespace FourSquare.SharpSquare.Core
 
         public List<VenueHistory> GetUserVenueHistory(Dictionary<string, string> parameters)
         {
-            FourSquareEntityItems<VenueHistory> venues = GetSingle<FourSquareEntityItems<VenueHistory>>("/users/self/venuehistory").response["venues"];
+            //thanks https://github.com/ignatandrei for the fix
+            FourSquareEntityItems<VenueHistory> venues = GetSingle<FourSquareEntityItems<VenueHistory>>("/users/self/venuehistory", parameters).response["venues"];
             
             return venues.items;
         }
@@ -471,11 +472,13 @@ namespace FourSquare.SharpSquare.Core
         /// You'll also notice a stats block that reveals some count data about the venue. herenow shows the number of people currently there (this value can be 0). 
         /// This endpoint is part of the venues API (https://developer.foursquare.com/overview/venues.html). 
         /// </summary>
-        public List<Venue> SearchVenues(Dictionary<string, string> parameters)
+        public List<FourSquareEntityItems<Venue>> SearchVenues(Dictionary<string, string> parameters)
         {
-            FourSquareEntityItems<Venue> venues = GetSingle<FourSquareEntityItems<Venue>>("/venues/search", parameters, true).response["groups"];
+            // thanks https://github.com/MarcelloLins for the fix 
+            
+            List<FourSquareEntityItems<Venue>> venues = GetMultiple<FourSquareEntityItems<Venue>>("/venues/search", parameters, true).response["groups"];
 
-            return venues.items;
+            return venues;
         }
 
         /// <summary>
