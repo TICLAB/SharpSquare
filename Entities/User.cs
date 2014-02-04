@@ -46,7 +46,7 @@ namespace FourSquare.SharpSquare.Entities
         /// <summary>
         /// URL of a profile picture for this user.
         /// </summary>
-        public string photo
+        public Icon photo
         {
             get;
             set;

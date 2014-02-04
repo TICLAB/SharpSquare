@@ -5,8 +5,8 @@ using System.Web;
 using System.Net;
 using System.Text;
 using System.IO;
-using System.Web.Script.Serialization;
 using FourSquare.SharpSquare.Entities;
+using Newtonsoft.Json;
 
 namespace FourSquare.SharpSquare.Core
 {
@@ -29,6 +29,7 @@ namespace FourSquare.SharpSquare.Core
         private string authenticateUrl = "https://foursquare.com/oauth2/authenticate";
         private string accessTokenUrl = "https://foursquare.com/oauth2/access_token";
         private string apiUrl = "https://api.foursquare.com/v2";
+        private string apiVersion = "20140101";
 
         public SharpSquare(string clientId, string clientSecret)
         {
@@ -114,8 +115,8 @@ namespace FourSquare.SharpSquare.Core
                 oauthToken = string.Format("oauth_token={0}", accessToken);
             }
 
-            string json = Request(string.Format("{0}{1}?{2}{3}", apiUrl, endpoint, oauthToken, serializedParameters), HttpMethod.GET);
-            FourSquareSingleResponse<T> fourSquareResponse = new JavaScriptSerializer().Deserialize<FourSquareSingleResponse<T>>(json);
+            string json = Request(string.Format("{0}{1}?{2}{3}&v={4}", apiUrl, endpoint, oauthToken, serializedParameters, apiVersion), HttpMethod.GET);
+            FourSquareSingleResponse<T> fourSquareResponse = JsonConvert.DeserializeObject<FourSquareSingleResponse<T>>(json);
             return fourSquareResponse;
         }
 
@@ -152,8 +153,8 @@ namespace FourSquare.SharpSquare.Core
                 oauthToken = string.Format("oauth_token={0}", accessToken);
             }
 
-            string json = Request(string.Format("{0}{1}?{2}{3}", apiUrl, endpoint, oauthToken, serializedParameters), HttpMethod.GET);
-            FourSquareMultipleResponse<T> fourSquareResponse = new JavaScriptSerializer().Deserialize<FourSquareMultipleResponse<T>>(json);
+            string json = Request(string.Format("{0}{1}?{2}{3}&v={4}", apiUrl, endpoint, oauthToken, serializedParameters,apiVersion), HttpMethod.GET);
+            FourSquareMultipleResponse<T> fourSquareResponse = JsonConvert.DeserializeObject<FourSquareMultipleResponse<T>>(json);
             return fourSquareResponse;
         }
         
@@ -178,7 +179,7 @@ namespace FourSquare.SharpSquare.Core
             string serializedParameters = "";
 
             string json = Request(string.Format("{0}{1}?oauth_token={2}{3}", apiUrl, endpoint, accessToken, serializedParameters), HttpMethod.POST);
-            FourSquareSingleResponse<T> fourSquareResponse = new JavaScriptSerializer().Deserialize<FourSquareSingleResponse<T>>(json);
+            FourSquareSingleResponse<T> fourSquareResponse = JsonConvert.DeserializeObject<FourSquareSingleResponse<T>>(json);
             return fourSquareResponse;
         }
 
@@ -191,7 +192,7 @@ namespace FourSquare.SharpSquare.Core
             }
 
             string json = Request(string.Format("{0}{1}?oauth_token={2}{3}", apiUrl, endpoint, accessToken, serializedParameters), HttpMethod.POST);
-            FourSquareSingleResponse<T> fourSquareResponse = new JavaScriptSerializer().Deserialize<FourSquareSingleResponse<T>>(json);
+            FourSquareSingleResponse<T> fourSquareResponse = JsonConvert.DeserializeObject<FourSquareSingleResponse<T>>(json);
             return fourSquareResponse;
         }
 
@@ -204,7 +205,7 @@ namespace FourSquare.SharpSquare.Core
         {
             string url = string.Format("{0}?client_id={1}&client_secret={2}&grant_type=authorization_code&redirect_uri={3}&code={4}", accessTokenUrl, clientId, clientSecret, redirectUri, code);
             string json = Request(url, HttpMethod.GET);
-            AccessToken accessToken = new JavaScriptSerializer().Deserialize<AccessToken>(json);
+            AccessToken accessToken = JsonConvert.DeserializeObject<AccessToken>(json);
             SetAccessToken(accessToken.access_token);
             return accessToken.access_token;
         }
@@ -327,8 +328,7 @@ namespace FourSquare.SharpSquare.Core
 
         public List<VenueHistory> GetUserVenueHistory(Dictionary<string, string> parameters)
         {
-            //thanks https://github.com/ignatandrei for the fix
-            FourSquareEntityItems<VenueHistory> venues = GetSingle<FourSquareEntityItems<VenueHistory>>("/users/self/venuehistory", parameters).response["venues"];
+            FourSquareEntityItems<VenueHistory> venues = GetSingle<FourSquareEntityItems<VenueHistory>>("/users/self/venuehistory").response["venues"];
             
             return venues.items;
         }
@@ -472,13 +472,11 @@ namespace FourSquare.SharpSquare.Core
         /// You'll also notice a stats block that reveals some count data about the venue. herenow shows the number of people currently there (this value can be 0). 
         /// This endpoint is part of the venues API (https://developer.foursquare.com/overview/venues.html). 
         /// </summary>
-        public List<FourSquareEntityItems<Venue>> SearchVenues(Dictionary<string, string> parameters)
+        public List<Venue> SearchVenues(Dictionary<string, string> parameters)
         {
-            // thanks https://github.com/MarcelloLins for the fix 
-            
-            List<FourSquareEntityItems<Venue>> venues = GetMultiple<FourSquareEntityItems<Venue>>("/venues/search", parameters, true).response["groups"];
+            FourSquareEntityItems<Venue> venues = GetSingle<FourSquareEntityItems<Venue>>("/venues/search", parameters, true).response["groups"];
 
-            return venues;
+            return venues.items;
         }
 
         /// <summary>

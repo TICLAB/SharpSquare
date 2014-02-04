@@ -125,7 +125,7 @@ namespace FourSquare.SharpSquare.Entities
         /// <summary>
         /// If v >= 20120121, a dictionary containing count and items array of specials at this venue. Otherwise, an array, possibly empty, of specials at this venue. 
         /// </summary>
-        public List<Special> specials
+        public FourSquareEntityItems<Special> specials
         {
             get;
             set;
@@ -303,10 +303,10 @@ namespace FourSquare.SharpSquare.Entities
         /// <summary>
         ///  Optional user is the branded page associated with the venue. If the venue is part of a chain, this will be a user object referring to the chain. For venues that are being managed and not part of a chain, this will contain a user object that uniquely refers to this venue. 
         /// </summary>
-        public Int64 page
-        {
-            get;
-            set;
-        }
+        // public Int64 page
+        // {
+        //    get;
+        //    set;
+        // }
     }
 }
