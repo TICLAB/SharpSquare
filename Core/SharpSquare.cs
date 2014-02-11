@@ -7,6 +7,9 @@ using System.Text;
 using System.IO;
 using System.Web.Script.Serialization;
 using FourSquare.SharpSquare.Entities;
+using System.Collections;
+using System.Reflection;
+using System.Diagnostics;
 
 namespace FourSquare.SharpSquare.Core
 {
@@ -96,7 +99,124 @@ namespace FourSquare.SharpSquare.Core
         {
             return GetSingle<T>(endpoint, parameters, false);
         }
+        /// <summary>
+        /// TODO: make this add to global errors to return to the caller
+        /// </summary>
+        /// <param name="message"></param>
+        private void InterceptError(string message)
+        {
+            var cc = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine(message);
+            Console.ForegroundColor = cc;
+            Debug.WriteLine(message);
+        }
+        private object DeserializeObject(Dictionary<string, object> dictItem, Type tip)
+        {
 
+            var newInstance = Activator.CreateInstance(tip);
+            var isDictionary = (tip.GetInterface("IDictionary") != null);
+            PropertyInfo p = null;
+            foreach (var k in dictItem.Keys)
+            {
+                var ser = new JavaScriptSerializer().Serialize(dictItem[k]);
+
+
+                Type tipP = null;
+                if (isDictionary)
+                {
+                    tipP = tip.GetGenericArguments()[1];
+                }
+                else
+                {
+
+                    try
+                    {
+                        p = tip.GetProperty(k);
+                        if (p == null)
+                            throw new ArgumentNullException(k);
+                    }
+                    catch (Exception)
+                    {
+                        //Console.WriteLine(ex.Message);                       
+                        InterceptError("missing property:" + k + " to class" + tip.FullName + " value:" + ser);
+                        continue;
+                    }
+                    tipP = p.PropertyType;
+                }
+
+
+                if (tipP.IsClass && tipP.FullName != typeof(string).FullName)
+                {
+
+                    dynamic val = null;
+                    try
+                    {
+                        val = new JavaScriptSerializer().Deserialize(ser, tipP);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("error for class:" + k + ex.Message);
+                        IList arr = dictItem[k] as object[];
+                        if (arr == null)
+                        {
+                            arr = dictItem[k] as ArrayList;
+                        }
+                        if (arr == null)
+                        {
+                            var t1 = dictItem[k] as Dictionary<string, object>;
+                            if (t1 == null)
+                            {
+                                InterceptError("Not a dictionary, not an array - please contact ignatandrei@yahoo.com for " + k);
+                            }
+
+                            val = DeserializeObject(dictItem[k] as Dictionary<string, object>, tipP);
+
+                        }
+                        else
+                        {
+                            val = Activator.CreateInstance(tipP);
+                            var tipGen = tipP.GetGenericArguments()[0];
+                            foreach (var obj in arr)
+                            {
+                                val.Add((dynamic)DeserializeObject(obj as Dictionary<string, object>, tipGen));
+                            }
+                        }
+
+
+                    }
+
+                    if (isDictionary)
+                    {
+                        ((IDictionary)newInstance).Add(k, Convert.ChangeType(val, tipP));
+                    }
+                    else
+                    {
+                        p.SetValue(newInstance, Convert.ChangeType(val, tipP), null);
+
+                    }
+                }
+                else//simple int , string,
+                {
+                    try
+                    {
+                        if (isDictionary)
+                        {
+                            ((IDictionary)newInstance).Add(k, Convert.ChangeType(dictItem[k], tipP));
+                        }
+                        else
+                        {
+                            p.SetValue(newInstance, Convert.ChangeType(dictItem[k], tipP), null);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        InterceptError("!!!not a simple property " + k + " from " + tip + " value:" + ser);
+                    }
+                }
+            }
+            return newInstance;
+        }
         private FourSquareSingleResponse<T> GetSingle<T>(string endpoint, Dictionary<string, string> parameters, bool unauthenticated) where T : FourSquareEntity
         {
             string serializedParameters = "";
@@ -116,7 +236,19 @@ namespace FourSquare.SharpSquare.Core
             }
 
             string json = Request(string.Format("{0}{1}?{2}{3}", apiUrl, endpoint, oauthToken, serializedParameters), HttpMethod.GET);
-            FourSquareSingleResponse<T> fourSquareResponse = new JavaScriptSerializer().Deserialize<FourSquareSingleResponse<T>>(json);
+            FourSquareSingleResponse<T> fourSquareResponse;
+            try
+            {
+                fourSquareResponse = new JavaScriptSerializer().Deserialize<FourSquareSingleResponse<T>>(json);  //json parameter is the string content of the api
+            }
+            catch (Exception ex)
+            {
+                var obj = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(json);  //json parameter is the string content of the api
+                fourSquareResponse = DeserializeObject(obj, typeof(FourSquareSingleResponse<T>)) as FourSquareSingleResponse<T>;
+                //TODO: look into debug in VS to see what it is missing
+                Debugger.Break();
+                throw;
+            }
             return fourSquareResponse;
         }
 
