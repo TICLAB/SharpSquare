@@ -5,8 +5,15 @@ using System.Web;
 
 namespace FourSquare.SharpSquare.Entities
 {
+    public class ImageNew
+    {
+        public string prefix { get; set; }
+        public string suffix { get; set; }
+
+    }
     public class Category : FourSquareEntity
     {
+       
         /// <summary>
         /// A unique identifier for this category.
         /// </summary>
@@ -48,7 +55,7 @@ namespace FourSquare.SharpSquare.Entities
         /// Combine prefix with a size (32, 44, 64, and 88 are available) and suffix, e.g. https://foursquare.com/img/categories/food/default_64.png. 
         /// To get an image with a gray background, use bg_ before the size, e.g. https://foursquare.com/img/categories_v2/food/icecream_bg_32.png.
         /// </summary>
-        public string icon
+        public Image icon
         {
             get;
             set;
