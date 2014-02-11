@@ -50,6 +50,7 @@ namespace FourSquare.SharpSquare.Core
 
         private string Request(string url, HttpMethod httpMethod, string data)
         {
+            url = url + "&v=20140101";
             string result = string.Empty;
             HttpWebRequest httpWebRequest = (HttpWebRequest)WebRequest.Create(url);
             httpWebRequest.Method = httpMethod.ToString();
