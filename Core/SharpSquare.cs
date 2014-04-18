@@ -451,16 +451,9 @@ namespace FourSquare.SharpSquare.Core
         /// </summary>
         public List<Venue> GetManagedVenues (Dictionary<string, string> parameters)
         {
-            List<FourSquareEntityItems<Venue>> venueGroups = GetMultiple<FourSquareEntityItems<Venue>>("/venues/managed", parameters, true).response["venues"];
+            FourSquareEntityItems<Venue> venues = GetSingle<FourSquareEntityItems<Venue>>("/venues/managed", parameters, false).response["venues"];
 
-            List<Venue> venueList = new List<Venue>();
-
-            foreach (FourSquareEntityItems<Venue> venueItems in venueGroups)
-            {
-                venueList.AddRange(venueItems.items);
-            }
-
-            return venueList;
+            return venues.items;
         }
 
         /// <summary>
