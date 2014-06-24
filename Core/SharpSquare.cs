@@ -7,6 +7,7 @@ using System.Text;
 using System.IO;
 using FourSquare.SharpSquare.Entities;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace FourSquare.SharpSquare.Core
 {
@@ -194,6 +195,18 @@ namespace FourSquare.SharpSquare.Core
 			string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
             FourSquareSingleResponse<T> fourSquareResponse = JsonConvert.DeserializeObject<FourSquareSingleResponse<T>>(json);
             return fourSquareResponse;
+        }
+
+		private JObject PostJObject(string endpoint, Dictionary<string, string> parameters)
+        {
+            string serializedParameters = "";
+            if (parameters != null)
+            {
+                serializedParameters = "&" + SerializeDictionary(parameters);
+            }
+
+			string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
+			return JObject.Parse(json);
         }
 
         public string GetAuthenticateUrl(string redirectUri)
@@ -610,7 +623,8 @@ namespace FourSquare.SharpSquare.Core
         /// </summary>
         public Checkin AddCheckin(Dictionary<string, string> parameters)
         {
-            return Post<Checkin>("/checkins/add", parameters).response["checkin"];
+	        JObject jObject = PostJObject("/checkins/add", parameters);
+	        return JsonConvert.DeserializeObject<Checkin>(jObject["response"]["checkin"].ToString());
         }
 
         /// <summary>
