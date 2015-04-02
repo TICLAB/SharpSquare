@@ -64,7 +64,7 @@ namespace FourSquare.SharpSquare.Core
                 stream.Write(bytes, 0, bytes.Length);
                 stream.Dispose();
             }
-            
+
             HttpWebResponse httpWebResponse = (HttpWebResponse)httpWebRequest.GetResponse();
             StreamReader reader = new StreamReader(httpWebResponse.GetResponseStream());
             result = reader.ReadToEnd();
@@ -154,11 +154,56 @@ namespace FourSquare.SharpSquare.Core
                 oauthToken = string.Format("oauth_token={0}", accessToken);
             }
 
-            string json = Request(string.Format("{0}{1}?{2}{3}&v={4}", apiUrl, endpoint, oauthToken, serializedParameters,apiVersion), HttpMethod.GET);
+            string json = Request(string.Format("{0}{1}?{2}{3}&v={4}", apiUrl, endpoint, oauthToken, serializedParameters, apiVersion), HttpMethod.GET);
             FourSquareMultipleResponse<T> fourSquareResponse = JsonConvert.DeserializeObject<FourSquareMultipleResponse<T>>(json);
             return fourSquareResponse;
         }
-        
+
+        #region CustomCode
+
+        //note@ismail -> SearchVenues throws exception beacuse Foursquare response contains "List<Venue>" and "Geocode" but it is not handled in SharpSquare code.
+        //todo@ismail -> Update nuget package when this issue fixed on github https://github.com/TICLAB/SharpSquare/issues/18
+
+        private FourSquareMultipleVenuesResponse<T> GetMultipleVenues<T>(string endpoint) where T : FourSquareEntity
+        {
+            return GetMultipleVenues<T>(endpoint, null, false);
+        }
+
+        private FourSquareMultipleVenuesResponse<T> GetMultipleVenues<T>(string endpoint, bool unauthenticated) where T : FourSquareEntity
+        {
+            return GetMultipleVenues<T>(endpoint, null, unauthenticated);
+        }
+
+        private FourSquareMultipleVenuesResponse<T> GetMultipleVenues<T>(string endpoint, Dictionary<string, string> parameters) where T : FourSquareEntity
+        {
+            return GetMultipleVenues<T>(endpoint, parameters, false);
+        }
+
+        private FourSquareMultipleVenuesResponse<T> GetMultipleVenues<T>(string endpoint, Dictionary<string, string> parameters, bool unauthenticated) where T : FourSquareEntity
+        {
+            string serializedParameters = "";
+            if (parameters != null)
+            {
+                serializedParameters = "&" + SerializeDictionary(parameters);
+            }
+
+            string oauthToken = "";
+            if (unauthenticated)
+            {
+                oauthToken = string.Format("client_id={0}&client_secret={1}", clientId, clientSecret);
+            }
+            else
+            {
+                oauthToken = string.Format("oauth_token={0}", accessToken);
+            }
+
+            string json = Request(string.Format("{0}{1}?{2}{3}&v={4}", apiUrl, endpoint, oauthToken, serializedParameters, apiVersion), HttpMethod.GET);
+            var fourSquareResponse = JsonConvert.DeserializeObject<FourSquareMultipleVenuesResponse<T>>(json);
+            return fourSquareResponse;
+        }
+
+        #endregion
+
         private void Post(string endpoint)
         {
             Post(endpoint, null);
@@ -172,14 +217,14 @@ namespace FourSquare.SharpSquare.Core
                 serializedParameters = "&" + SerializeDictionary(parameters);
             }
 
-			string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
+            string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
         }
 
         private FourSquareSingleResponse<T> Post<T>(string endpoint) where T : FourSquareEntity
         {
             string serializedParameters = "";
 
-			string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
+            string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
             FourSquareSingleResponse<T> fourSquareResponse = JsonConvert.DeserializeObject<FourSquareSingleResponse<T>>(json);
             return fourSquareResponse;
         }
@@ -192,12 +237,12 @@ namespace FourSquare.SharpSquare.Core
                 serializedParameters = "&" + SerializeDictionary(parameters);
             }
 
-			string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
+            string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
             FourSquareSingleResponse<T> fourSquareResponse = JsonConvert.DeserializeObject<FourSquareSingleResponse<T>>(json);
             return fourSquareResponse;
         }
 
-		private JObject PostJObject(string endpoint, Dictionary<string, string> parameters)
+        private JObject PostJObject(string endpoint, Dictionary<string, string> parameters)
         {
             string serializedParameters = "";
             if (parameters != null)
@@ -205,8 +250,8 @@ namespace FourSquare.SharpSquare.Core
                 serializedParameters = "&" + SerializeDictionary(parameters);
             }
 
-			string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
-			return JObject.Parse(json);
+            string json = Request(string.Format("{0}{1}?oauth_token={2}{3}&v={4}", apiUrl, endpoint, accessToken, serializedParameters, apiVersion), HttpMethod.POST);
+            return JObject.Parse(json);
         }
 
         public string GetAuthenticateUrl(string redirectUri)
@@ -237,7 +282,7 @@ namespace FourSquare.SharpSquare.Core
         /// In addition, the pings field will indicate whether checkins from this user will trigger a ping (notifications to mobile devices). This setting can be changed via setpings. Note that this setting is overriden if pings is false in settings (no pings will be sent, even if this user is set to true). 
         /// </summary>
         public User GetUser(string userId)
-        {          
+        {
             return GetSingle<User>("/users/" + userId).response["user"];
         }
 
@@ -309,7 +354,7 @@ namespace FourSquare.SharpSquare.Core
         public List<Tip> GetUserTips(string userId, Dictionary<string, string> parameters)
         {
             FourSquareEntityItems<Tip> tips = GetSingle<FourSquareEntityItems<Tip>>("/users/" + userId + "/tips", parameters).response["tips"];
-            
+
             return tips.items;
         }
 
@@ -328,7 +373,7 @@ namespace FourSquare.SharpSquare.Core
            
             return todos.items;
         }*/
-    
+
         /// <summary>
         /// https://api.foursquare.com/v2/users/USER_ID/venuehistory
         /// Returns a list of all venues visited by the specified user, along with how many visits and when they were last there.
@@ -342,7 +387,7 @@ namespace FourSquare.SharpSquare.Core
         public List<VenueHistory> GetUserVenueHistory(Dictionary<string, string> parameters)
         {
             FourSquareEntityItems<VenueHistory> venues = GetSingle<FourSquareEntityItems<VenueHistory>>("/users/self/venuehistory").response["venues"];
-            
+
             return venues.items;
         }
 
@@ -389,15 +434,15 @@ namespace FourSquare.SharpSquare.Core
         /// </summary>
         public User SetUserPings(string userId, string value)
         {
-            Dictionary<string,string> parameters = new Dictionary<string,string>();
-           
+            Dictionary<string, string> parameters = new Dictionary<string, string>();
+
             parameters.Add("value", value);
-            
+
             return Post<User>("/users/" + userId + "/setpings", parameters).response["user"];
         }
 
         #endregion
-        
+
         //Venue
         /// <summary>
         /// https://api.foursquare.com/v2/venues/VENUE_ID
@@ -422,7 +467,7 @@ namespace FourSquare.SharpSquare.Core
         {
             return Post<Venue>("/venues/add", parameters).response["venue"];
         }
-        
+
         /// <summary>
         /// https://api.foursquare.com/v2/venues/categories
         /// Returns a hierarchical list of categories applied to venues. 
@@ -462,9 +507,9 @@ namespace FourSquare.SharpSquare.Core
         /// https://api.foursquare.com/v2/venues/managed
         /// Get a list of venues the current user manages. 
         /// </summary>
-        public List<Venue> GetManagedVenues (Dictionary<string, string> parameters)
+        public List<Venue> GetManagedVenues(Dictionary<string, string> parameters)
         {
-			return GetMultiple<Venue>("/venues/managed", parameters, false).response["venues"];
+            return GetMultiple<Venue>("/venues/managed", parameters, false).response["venues"];
         }
 
         /// <summary>
@@ -478,14 +523,14 @@ namespace FourSquare.SharpSquare.Core
         /// </summary>
         public List<Venue> SearchVenues(Dictionary<string, string> parameters)
         {
-            return GetMultiple<Venue>("/venues/search", parameters, true).response["venues"];
+            return GetMultipleVenues<Venue>("/venues/search", parameters, true).response.venues;
         }
 
         /// <summary>
         /// https://api.foursquare.com/v2/venues/timeseries
         /// Get daily venue stats for a list of venues over a time range.  
         /// </summary>
-        public List<VenueTimeSerie> GetVenueTimeSeriesData (Dictionary<string, string> parameters)
+        public List<VenueTimeSerie> GetVenueTimeSeriesData(Dictionary<string, string> parameters)
         {
             return GetMultiple<VenueTimeSerie>("/venues/timeseries", parameters, true).response["timeseries"];
         }
@@ -498,7 +543,7 @@ namespace FourSquare.SharpSquare.Core
         {
             return GetMultiple<Venue>("/venues/suggestcompletion", parameters, true).response["minivenues"];
         }
-        
+
         /// <summary>
         /// https://api.foursquare.com/v2/venues/trending
         /// Returns a list of venues near the current location with the most people currently checked in.
@@ -522,7 +567,7 @@ namespace FourSquare.SharpSquare.Core
         public List<Checkin> GetVenueHereNow(string venueId, Dictionary<string, string> parameters)
         {
             FourSquareEntityItems<Checkin> checkins = GetSingle<FourSquareEntityItems<Checkin>>("/venues/" + venueId + "/herenow", parameters, true).response["hereNow"];
-           
+
             return checkins.items;
         }
 
@@ -538,7 +583,7 @@ namespace FourSquare.SharpSquare.Core
         public List<Tip> GetVenueTips(string venueId, Dictionary<string, string> parameters)
         {
             FourSquareEntityItems<Tip> tips = GetSingle<FourSquareEntityItems<Tip>>("/venues/" + venueId + "/tips", parameters, true).response["tips"];
-            
+
             return tips.items;
         }
 
@@ -560,7 +605,7 @@ namespace FourSquare.SharpSquare.Core
         public List<Link> GetVenueLinks(string venueId)
         {
             FourSquareEntityItems<Link> links = GetSingle<FourSquareEntityItems<Link>>("/venues/" + venueId + "/links", true).response["links"];
-            
+
             return links.items;
         }
 
@@ -571,7 +616,7 @@ namespace FourSquare.SharpSquare.Core
         public Todo SetVenueToDo(string venueId, string text)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
-            
+
             parameters.Add("text", text);
 
             return Post<Todo>("/venues/" + venueId + "/marktodo", parameters).response["todo"];
@@ -585,12 +630,12 @@ namespace FourSquare.SharpSquare.Core
         public void SetVenueFlag(string venueId, string problem)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
-            
+
             parameters.Add("problem", problem);
-            
+
             Post("/venues/" + venueId + "/flag", parameters);
         }
-        
+
         /// <summary>
         /// https://api.foursquare.com/v2/venues/VENUE_ID/proposeedit
         /// Allows you to propose a change to a venue.
@@ -615,7 +660,7 @@ namespace FourSquare.SharpSquare.Core
         {
             return GetSingle<Checkin>("/checkins/" + checkinId).response["checkin"];
         }
-        
+
         /// <summary>
         /// https://api.foursquare.com/v2/checkins/add
         /// Allows you to check in to a place. 
@@ -623,8 +668,8 @@ namespace FourSquare.SharpSquare.Core
         /// </summary>
         public Checkin AddCheckin(Dictionary<string, string> parameters)
         {
-	        JObject jObject = PostJObject("/checkins/add", parameters);
-	        return JsonConvert.DeserializeObject<Checkin>(jObject["response"]["checkin"].ToString());
+            JObject jObject = PostJObject("/checkins/add", parameters);
+            return JsonConvert.DeserializeObject<Checkin>(jObject["response"]["checkin"].ToString());
         }
 
         /// <summary>
@@ -638,7 +683,7 @@ namespace FourSquare.SharpSquare.Core
 
         public List<Checkin> GetRecentCheckin(Dictionary<string, string> parameters)
         {
-            return  GetMultiple<Checkin>("/checkins/recent", parameters).response["recent"];
+            return GetMultiple<Checkin>("/checkins/recent", parameters).response["recent"];
         }
 
         /// <summary>
@@ -648,7 +693,7 @@ namespace FourSquare.SharpSquare.Core
         public void AddChekinComment(string checkinId, string text)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
-           
+
             parameters.Add("text", text);
 
             Post("/checkins/" + checkinId + "/addcomment", parameters);
@@ -661,7 +706,7 @@ namespace FourSquare.SharpSquare.Core
         public void DeleteChekinComment(string checkinId, string commentId)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
-            
+
             parameters.Add("commentId", commentId);
 
             Post("/checkins/" + checkinId + "/deletecomment", parameters);
@@ -769,12 +814,12 @@ namespace FourSquare.SharpSquare.Core
         public void SetSetting(string settingId, string value)
         {
             Dictionary<string, string> parameters = new Dictionary<string, string>();
-            
+
             parameters.Add("value", value);
 
             Post("/settings/" + settingId + "/set", parameters);
         }
-        
+
         //Special
         /// <summary>
         /// https://api.foursquare.com/v2/specials/SPECIAL_ID
@@ -793,7 +838,7 @@ namespace FourSquare.SharpSquare.Core
         public List<Special> SearchSpecials(Dictionary<string, string> parameters)
         {
             FourSquareEntityItems<Special> specials = GetSingle<FourSquareEntityItems<Special>>("/specials/search", parameters).response["specials"];
-            
+
             return specials.items;
         }
     }

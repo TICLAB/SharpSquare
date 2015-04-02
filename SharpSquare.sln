@@ -1,7 +1,11 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Web Developer Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSquare", "SharpSquare.csproj", "{F6163F95-DA23-49C6-B58B-CEF0CF0B2C83}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpSquare.Tests", "Tests\SharpSquare.Tests\SharpSquare.Tests.csproj", "{11A4950A-E69C-4A7A-B129-B4AD92E00304}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,6 +17,10 @@ Global
 		{F6163F95-DA23-49C6-B58B-CEF0CF0B2C83}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6163F95-DA23-49C6-B58B-CEF0CF0B2C83}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6163F95-DA23-49C6-B58B-CEF0CF0B2C83}.Release|Any CPU.Build.0 = Release|Any CPU
+		{11A4950A-E69C-4A7A-B129-B4AD92E00304}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{11A4950A-E69C-4A7A-B129-B4AD92E00304}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{11A4950A-E69C-4A7A-B129-B4AD92E00304}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{11A4950A-E69C-4A7A-B129-B4AD92E00304}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
