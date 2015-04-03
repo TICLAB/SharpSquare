@@ -44,6 +44,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Core\FourSquareMultipleVenuesResponse.cs" />
+    <Compile Include="Core\VenueResponse.cs" />
     <Compile Include="Entities\Icon.cs" />
     <Compile Include="Core\FourSquareMultipleResponse.cs" />
     <Compile Include="Core\FourSquareResponse.cs" />
