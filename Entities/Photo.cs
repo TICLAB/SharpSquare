@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace FourSquare.SharpSquare.Entities
+﻿namespace FourSquare.SharpSquare.Entities
 {
     public class Photo : FourSquareEntity
     {
@@ -45,6 +40,24 @@ namespace FourSquare.SharpSquare.Entities
         /// - heightYY: forces the height to be YY and scales the width proportionally
         /// </summary>
         public string suffix
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Original photo width
+        /// </summary>
+        public int width
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Original photo height
+        /// </summary>
+        public int height
         {
             get;
             set;
