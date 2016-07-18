@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace FourSquare.SharpSquare.Entities
+﻿namespace FourSquare.SharpSquare.Entities
 {
     public class Location : FourSquareEntity
     {
@@ -62,6 +57,12 @@ namespace FourSquare.SharpSquare.Entities
         }
 
         public string cc
+        {
+            get;
+            set;
+        }
+
+        public string[] formattedAddress
         {
             get;
             set;
